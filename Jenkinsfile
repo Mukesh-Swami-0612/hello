@@ -8,7 +8,12 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/Mukesh-Swami-0612/hello.git'  // ✅ Your GitHub repo
+                stage('Clone Repo') {
+    steps {
+        git branch: 'main', url: 'https://github.com/Mukesh-Swami-0612/hello.git'
+    }
+}
+
             }
         }
 
