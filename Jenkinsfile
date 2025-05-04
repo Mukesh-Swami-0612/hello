@@ -2,18 +2,14 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'mukesh0612/hello'  // ✅ Your DockerHub image name
+        IMAGE_NAME = 'mukesh0612/hello'  // Your DockerHub image
     }
 
     stages {
         stage('Clone Repo') {
             steps {
-                stage('Clone Repo') {
-    steps {
-        git branch: 'main', url: 'https://github.com/Mukesh-Swami-0612/hello.git'
-    }
-}
-
+                // Explicitly cloning the 'main' branch to avoid branch not found error
+                git branch: 'main', url: 'https://github.com/Mukesh-Swami-0612/hello.git'
             }
         }
 
@@ -27,7 +23,7 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                withDockerRegistry([ credentialsId: 'dockerhub-credentials', url: '' ]) {
+                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
                     script {
                         docker.image("${IMAGE_NAME}").push("latest")
                     }
@@ -37,8 +33,17 @@ pipeline {
 
         stage('Cleanup') {
             steps {
-                sh "docker rmi ${IMAGE_NAME}"
+                sh "docker rmi ${IMAGE_NAME} || true"
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
